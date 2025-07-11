@@ -87,9 +87,8 @@ class PianoFlashCards {
         const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
         const blackKeys = { 'C': true, 'D': true, 'F': true, 'G': true, 'A': true };
         
-        // Create one octave of keys
+        // Create white keys first
         notes.forEach((note, index) => {
-            // White key
             const whiteKey = document.createElement('div');
             whiteKey.className = 'piano-key white';
             whiteKey.dataset.note = note;
@@ -101,13 +100,15 @@ class PianoFlashCards {
             
             whiteKey.addEventListener('click', () => this.checkAnswer(note));
             piano.appendChild(whiteKey);
-            
-            // Black key (if this white key has one)
+        });
+        
+        // Create black keys after all white keys
+        notes.forEach((note, index) => {
             if (blackKeys[note] && index < notes.length - 1) {
                 const blackKey = document.createElement('div');
                 blackKey.className = 'piano-key black';
                 blackKey.dataset.note = note + '#';
-                blackKey.style.left = `${(index + 1) * 40 - 12.5}px`;
+                blackKey.style.left = `${(index + 1) * 40 - 20}px`;
                 
                 const blackLabel = document.createElement('div');
                 blackLabel.className = 'piano-key-label';

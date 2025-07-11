@@ -178,13 +178,14 @@ h1 {
 }
 
 .piano-key.black {
-    width: 25px;
+    width: 30px;
     height: 75px;
     background: #000;
+    border: 1px solid #000;
     border-radius: 0 0 3px 3px;
     position: absolute;
     z-index: 2;
-    margin-left: -12.5px;
+    top: 0;
 }
 
 .piano-key.black:hover {
