@@ -72,6 +72,13 @@ class PianoFlashCards {
                 this.drawStaff(this.currentNoteWithOctave);
             }
         });
+        
+        // Show mnemonics checkbox
+        document.getElementById('showMnemonics').addEventListener('change', () => {
+            if (this.currentNoteWithOctave) {
+                this.drawStaff(this.currentNoteWithOctave);
+            }
+        });
     }
     
     generateNewNote() {
@@ -161,6 +168,40 @@ class PianoFlashCards {
             label.setAttribute('fill', '#999');
             label.textContent = 'C';
             svg.appendChild(label);
+        }
+        
+        // Show mnemonics if enabled
+        if (document.getElementById('showMnemonics').checked) {
+            const mnemonicLines = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            const mnemonicSpaces = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            
+            if (this.currentClef === 'treble') {
+                // Treble clef mnemonics
+                mnemonicLines.textContent = 'Lines: Every Good Boy Does Fine';
+                mnemonicSpaces.textContent = 'Spaces: FACE';
+            } else {
+                // Bass clef mnemonics
+                mnemonicLines.textContent = 'Lines: Good Boys Do Fine Always';
+                mnemonicSpaces.textContent = 'Spaces: All Cows Eat Grass';
+            }
+            
+            // Position above the staff
+            mnemonicLines.setAttribute('x', '200');
+            mnemonicLines.setAttribute('y', '25');
+            mnemonicLines.setAttribute('text-anchor', 'middle');
+            mnemonicLines.setAttribute('font-size', '12');
+            mnemonicLines.setAttribute('fill', '#666');
+            mnemonicLines.setAttribute('font-family', 'sans-serif');
+            
+            mnemonicSpaces.setAttribute('x', '200');
+            mnemonicSpaces.setAttribute('y', '10');
+            mnemonicSpaces.setAttribute('text-anchor', 'middle');
+            mnemonicSpaces.setAttribute('font-size', '12');
+            mnemonicSpaces.setAttribute('fill', '#666');
+            mnemonicSpaces.setAttribute('font-family', 'sans-serif');
+            
+            svg.appendChild(mnemonicLines);
+            svg.appendChild(mnemonicSpaces);
         }
         
         // Draw clef
