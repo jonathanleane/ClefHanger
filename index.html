@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano Note Flash Cards</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Piano Note Flash Cards</h1>
+        
+        <div class="score-tracker">
+            <span>Score: <span id="score">0</span></span>
+            <span>Streak: <span id="streak">0</span></span>
+        </div>
+
+        <div class="staff-container">
+            <svg id="staff" width="400" height="200" viewBox="0 0 400 200">
+                <!-- Staff lines will be drawn here -->
+            </svg>
+        </div>
+
+        <div class="answer-section">
+            <div class="note-buttons">
+                <button class="note-btn" data-note="C">C</button>
+                <button class="note-btn" data-note="D">D</button>
+                <button class="note-btn" data-note="E">E</button>
+                <button class="note-btn" data-note="F">F</button>
+                <button class="note-btn" data-note="G">G</button>
+                <button class="note-btn" data-note="A">A</button>
+                <button class="note-btn" data-note="B">B</button>
+            </div>
+            <div id="feedback" class="feedback"></div>
+        </div>
+
+        <div class="settings">
+            <label>
+                <input type="checkbox" id="trebleClef" checked> Treble Clef
+            </label>
+            <label>
+                <input type="checkbox" id="bassClef" checked> Bass Clef
+            </label>
+            <button id="newNote">New Note</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
