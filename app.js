@@ -7,39 +7,39 @@ class PianoFlashCards {
         
         // Note positions for treble and bass clef
         this.trebleNotes = {
-            'C4': 0,   // Middle C (ledger line below staff)
-            'D4': 7,
-            'E4': 14,
-            'F4': 21,
-            'G4': 28,
-            'A4': 35,
-            'B4': 42,
-            'C5': 49,
-            'D5': 56,
-            'E5': 63,
-            'F5': 70,
-            'G5': 77,
-            'A5': 84,
-            'B5': 91,
-            'C6': 98   // High C (ledger line above staff)
+            'C4': -20,  // Middle C (ledger line below staff)
+            'D4': -10,
+            'E4': 0,    // Bottom line
+            'F4': 10,
+            'G4': 20,   // Second line
+            'A4': 30,
+            'B4': 40,   // Middle line
+            'C5': 50,
+            'D5': 60,   // Fourth line
+            'E5': 70,
+            'F5': 80,   // Top line
+            'G5': 90,
+            'A5': 100,
+            'B5': 110,
+            'C6': 120   // High C (ledger line above staff)
         };
         
         this.bassNotes = {
-            'A2': 98,  // Low A (ledger line below staff)
-            'B2': 91,
-            'C3': 84,
-            'D3': 77,
-            'E3': 70,
-            'F3': 63,
-            'G3': 56,
-            'A3': 49,
-            'B3': 42,
-            'C4': 35,  // Middle C (ledger line above staff)
-            'D4': 28,
-            'E4': 21,
-            'F4': 14,
-            'G4': 7,
-            'A4': 0
+            'A2': 120,  // Low A (ledger line below staff)
+            'B2': 110,
+            'C3': 100,  // Bottom line
+            'D3': 90,
+            'E3': 80,   // Second line
+            'F3': 70,
+            'G3': 60,   // Middle line
+            'A3': 50,
+            'B3': 40,   // Fourth line
+            'C4': 30,   // Middle C (ledger line above staff)
+            'D4': 20,   // Top line
+            'E4': 10,
+            'F4': 0,
+            'G4': -10,
+            'A4': -20
         };
         
         this.setupEventListeners();
