@@ -44,6 +44,7 @@ class PianoFlashCards {
         };
         
         this.setupEventListeners();
+        this.createPianoKeyboard();
         this.generateNewNote();
     }
     
@@ -77,6 +78,44 @@ class PianoFlashCards {
         document.getElementById('showMnemonics').addEventListener('change', () => {
             if (this.currentNoteWithOctave) {
                 this.drawStaff(this.currentNoteWithOctave);
+            }
+        });
+    }
+    
+    createPianoKeyboard() {
+        const piano = document.getElementById('piano');
+        const notes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+        const blackKeys = { 'C': true, 'D': true, 'F': true, 'G': true, 'A': true };
+        
+        // Create one octave of keys
+        notes.forEach((note, index) => {
+            // White key
+            const whiteKey = document.createElement('div');
+            whiteKey.className = 'piano-key white';
+            whiteKey.dataset.note = note;
+            
+            const label = document.createElement('div');
+            label.className = 'piano-key-label';
+            label.textContent = note;
+            whiteKey.appendChild(label);
+            
+            whiteKey.addEventListener('click', () => this.checkAnswer(note));
+            piano.appendChild(whiteKey);
+            
+            // Black key (if this white key has one)
+            if (blackKeys[note] && index < notes.length - 1) {
+                const blackKey = document.createElement('div');
+                blackKey.className = 'piano-key black';
+                blackKey.dataset.note = note + '#';
+                blackKey.style.left = `${(index + 1) * 40 - 12.5}px`;
+                
+                const blackLabel = document.createElement('div');
+                blackLabel.className = 'piano-key-label';
+                blackLabel.textContent = note + '#';
+                blackKey.appendChild(blackLabel);
+                
+                // We don't use black keys for answers in this simple version
+                piano.appendChild(blackKey);
             }
         });
     }
@@ -303,6 +342,9 @@ class PianoFlashCards {
             this.score++;
             this.streak++;
             
+            // Highlight the correct key
+            this.highlightPianoKey(this.currentNote);
+            
             // Play the correct note
             this.playNote(this.currentNote);
             
@@ -313,6 +355,9 @@ class PianoFlashCards {
             feedback.className = 'feedback incorrect';
             this.streak = 0;
             
+            // Highlight the correct key
+            this.highlightPianoKey(this.currentNote);
+            
             // Generate new note after 2 seconds
             setTimeout(() => this.generateNewNote(), 2000);
         }
@@ -320,6 +365,23 @@ class PianoFlashCards {
         // Update score display
         document.getElementById('score').textContent = this.score;
         document.getElementById('streak').textContent = this.streak;
+    }
+    
+    highlightPianoKey(note) {
+        // Remove any existing highlights
+        document.querySelectorAll('.piano-key').forEach(key => {
+            key.classList.remove('highlight');
+        });
+        
+        // Find and highlight the correct key
+        const pianoKey = document.querySelector(`.piano-key[data-note="${note}"]`);
+        if (pianoKey) {
+            pianoKey.classList.add('highlight');
+            // Remove highlight after animation
+            setTimeout(() => {
+                pianoKey.classList.remove('highlight');
+            }, 500);
+        }
     }
 }
 

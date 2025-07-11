@@ -141,6 +141,90 @@ h1 {
     background: #27ae60;
 }
 
+.piano-keyboard {
+    margin: 2rem 0 1rem 0;
+    position: relative;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    user-select: none;
+}
+
+.piano-key {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.piano-key.white {
+    width: 40px;
+    height: 120px;
+    background: white;
+    border: 1px solid #000;
+    border-radius: 0 0 5px 5px;
+    z-index: 1;
+}
+
+.piano-key.white:hover {
+    background: #f0f0f0;
+}
+
+.piano-key.white:active,
+.piano-key.white.active {
+    background: #e0e0e0;
+    transform: translateY(2px);
+}
+
+.piano-key.black {
+    width: 25px;
+    height: 75px;
+    background: #000;
+    border-radius: 0 0 3px 3px;
+    position: absolute;
+    z-index: 2;
+    margin-left: -12.5px;
+}
+
+.piano-key.black:hover {
+    background: #333;
+}
+
+.piano-key.black:active,
+.piano-key.black.active {
+    background: #555;
+    transform: translateY(2px);
+}
+
+.piano-key.highlight {
+    background: #4CAF50 !important;
+    animation: highlightKey 0.5s ease-out;
+}
+
+@keyframes highlightKey {
+    0% { background: #4CAF50; }
+    100% { background: white; }
+}
+
+.piano-key-label {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.piano-key.white .piano-key-label {
+    color: #333;
+}
+
+.piano-key.black .piano-key-label {
+    color: #fff;
+    bottom: 5px;
+    font-size: 10px;
+}
+
 @media (max-width: 480px) {
     .container {
         padding: 1.5rem;
@@ -148,5 +232,14 @@ h1 {
     
     .note-buttons {
         grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .piano-key.white {
+        width: 30px;
+    }
+    
+    .piano-key.black {
+        width: 20px;
+        margin-left: -10px;
     }
 }
