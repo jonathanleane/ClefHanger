@@ -148,7 +148,6 @@ h1 {
     display: flex;
     justify-content: center;
     user-select: none;
-    padding-top: 10px;
 }
 
 .piano-key {
@@ -178,13 +177,12 @@ h1 {
 
 .piano-key.black {
     width: 25px;
-    height: 70px;
+    height: 75px;
     background: #000;
     border-radius: 0 0 3px 3px;
     position: absolute;
     z-index: 2;
     margin-left: -12.5px;
-    top: 0;
 }
 
 .piano-key.black:hover {

@@ -107,7 +107,7 @@ class PianoFlashCards {
                 const blackKey = document.createElement('div');
                 blackKey.className = 'piano-key black';
                 blackKey.dataset.note = note + '#';
-                blackKey.style.left = `${(index * 40) + 27.5}px`;
+                blackKey.style.left = `${(index + 1) * 40 - 12.5}px`;
                 
                 const blackLabel = document.createElement('div');
                 blackLabel.className = 'piano-key-label';
