@@ -57,6 +57,7 @@ h1 {
 
 .answer-section {
     margin-bottom: 2rem;
+    text-align: center;
 }
 
 .note-buttons {
@@ -145,8 +146,7 @@ h1 {
     margin: 2rem 0 1rem 0;
     position: relative;
     height: 120px;
-    display: flex;
-    justify-content: center;
+    display: inline-block;
     user-select: none;
 }
 
@@ -163,6 +163,8 @@ h1 {
     border: 1px solid #000;
     border-radius: 0 0 5px 5px;
     z-index: 1;
+    display: inline-block;
+    vertical-align: top;
 }
 
 .piano-key.white:hover {
