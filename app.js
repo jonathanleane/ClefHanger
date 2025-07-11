@@ -64,6 +64,13 @@ class PianoFlashCards {
         document.getElementById('newNote').addEventListener('click', () => {
             this.generateNewNote();
         });
+        
+        // Show middle C checkbox
+        document.getElementById('showMiddleC').addEventListener('change', () => {
+            this.drawStaff(this.currentNote + (this.currentClef === 'treble' ? 
+                Object.keys(this.trebleNotes).find(k => k.startsWith(this.currentNote)) :
+                Object.keys(this.bassNotes).find(k => k.startsWith(this.currentNote))).slice(1));
+        });
     }
     
     generateNewNote() {
@@ -115,6 +122,43 @@ class PianoFlashCards {
             line.setAttribute('stroke', '#333');
             line.setAttribute('stroke-width', '2');
             svg.appendChild(line);
+        }
+        
+        // Show middle C reference if enabled
+        if (document.getElementById('showMiddleC').checked) {
+            const middleCY = this.currentClef === 'treble' ? 130 : 95;
+            
+            // Draw middle C note (grayed out)
+            const refNote = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+            refNote.setAttribute('cx', '300');
+            refNote.setAttribute('cy', middleCY);
+            refNote.setAttribute('rx', '12');
+            refNote.setAttribute('ry', '9');
+            refNote.setAttribute('fill', '#ccc');
+            refNote.setAttribute('opacity', '0.5');
+            refNote.setAttribute('transform', `rotate(-20 300 ${middleCY})`);
+            svg.appendChild(refNote);
+            
+            // Draw ledger line for middle C
+            const ledger = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            ledger.setAttribute('x1', '285');
+            ledger.setAttribute('y1', middleCY);
+            ledger.setAttribute('x2', '315');
+            ledger.setAttribute('y2', middleCY);
+            ledger.setAttribute('stroke', '#ccc');
+            ledger.setAttribute('stroke-width', '2');
+            ledger.setAttribute('opacity', '0.5');
+            svg.appendChild(ledger);
+            
+            // Label
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('x', '300');
+            label.setAttribute('y', middleCY - 20);
+            label.setAttribute('text-anchor', 'middle');
+            label.setAttribute('font-size', '14');
+            label.setAttribute('fill', '#999');
+            label.textContent = 'C';
+            svg.appendChild(label);
         }
         
         // Draw clef
