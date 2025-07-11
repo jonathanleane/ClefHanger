@@ -3,6 +3,7 @@ class PianoFlashCards {
         this.score = 0;
         this.streak = 0;
         this.currentNote = null;
+        this.currentNoteWithOctave = null;
         this.currentClef = null;
         
         // Note positions for treble and bass clef
@@ -67,9 +68,9 @@ class PianoFlashCards {
         
         // Show middle C checkbox
         document.getElementById('showMiddleC').addEventListener('change', () => {
-            this.drawStaff(this.currentNote + (this.currentClef === 'treble' ? 
-                Object.keys(this.trebleNotes).find(k => k.startsWith(this.currentNote)) :
-                Object.keys(this.bassNotes).find(k => k.startsWith(this.currentNote))).slice(1));
+            if (this.currentNoteWithOctave) {
+                this.drawStaff(this.currentNoteWithOctave);
+            }
         });
     }
     
@@ -102,6 +103,7 @@ class PianoFlashCards {
         const randomIndex = Math.floor(Math.random() * notes.length);
         const noteWithOctave = notes[randomIndex];
         this.currentNote = noteWithOctave.charAt(0); // Extract just the note letter
+        this.currentNoteWithOctave = noteWithOctave; // Store the full note with octave
         
         // Draw the staff and note
         this.drawStaff(noteWithOctave);
