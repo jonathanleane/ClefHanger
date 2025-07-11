@@ -25,21 +25,21 @@ class PianoFlashCards {
         };
         
         this.bassNotes = {
-            'A2': 120,  // Low A (ledger line below staff)
-            'B2': 110,
-            'C3': 100,  // Bottom line
-            'D3': 90,
-            'E3': 80,   // Second line
-            'F3': 70,
-            'G3': 60,   // Middle line
-            'A3': 50,
-            'B3': 40,   // Fourth line
-            'C4': 30,   // Middle C (ledger line above staff)
-            'D4': 20,   // Top line
-            'E4': 10,
-            'F4': 0,
-            'G4': -10,
-            'A4': -20
+            'E2': -20,  // Low E (ledger line below staff)
+            'F2': -10,
+            'G2': 0,    // Bottom line (G)
+            'A2': 10,   // Space
+            'B2': 20,   // Second line (B)
+            'C3': 30,   // Space
+            'D3': 40,   // Middle line (D)
+            'E3': 50,   // Space
+            'F3': 60,   // Fourth line (F)
+            'G3': 70,   // Space
+            'A3': 80,   // Top line (A)
+            'B3': 90,   // Space
+            'C4': 100,  // Middle C (ledger line above staff)
+            'D4': 110,
+            'E4': 120
         };
         
         this.setupEventListeners();
