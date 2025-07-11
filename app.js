@@ -46,6 +46,12 @@ class PianoFlashCards {
         this.setupEventListeners();
         this.createPianoKeyboard();
         this.generateNewNote();
+        
+        // Redraw keyboard on window resize
+        window.addEventListener('resize', () => {
+            document.getElementById('piano').innerHTML = '';
+            this.createPianoKeyboard();
+        });
     }
     
     setupEventListeners() {
@@ -103,12 +109,13 @@ class PianoFlashCards {
         });
         
         // Create black keys after all white keys
+        const keyWidth = window.innerWidth <= 480 ? 30 : 40;
         notes.forEach((note, index) => {
             if (blackKeys[note] && index < notes.length - 1) {
                 const blackKey = document.createElement('div');
                 blackKey.className = 'piano-key black';
                 blackKey.dataset.note = note + '#';
-                blackKey.style.left = `${(index + 1) * 40 - 20}px`;
+                blackKey.style.left = `${(index + 1) * keyWidth - keyWidth/2}px`;
                 
                 const blackLabel = document.createElement('div');
                 blackLabel.className = 'piano-key-label';
