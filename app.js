@@ -126,7 +126,7 @@ class PianoFlashCards {
         
         // Show middle C reference if enabled
         if (document.getElementById('showMiddleC').checked) {
-            const middleCY = this.currentClef === 'treble' ? 130 : 95;
+            const middleCY = this.currentClef === 'treble' ? 130 : 30;
             
             // Draw middle C note (grayed out)
             const refNote = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
