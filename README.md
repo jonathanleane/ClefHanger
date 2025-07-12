@@ -4,8 +4,6 @@ A fun, interactive web app for learning to read musical notes on treble and bass
 
 **[Try it live here →](https://jonathanleane.github.io/ClefHanger/)**
 
-![ClefHanger Screenshot](screenshot.png)
-
 ## ✨ Features
 
 - **Interactive Learning**: Click buttons or piano keys to identify notes
