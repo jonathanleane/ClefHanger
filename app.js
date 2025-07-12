@@ -251,11 +251,20 @@ class PianoFlashCards {
             svg.appendChild(mnemonicSpaces);
         }
         
-        // Draw clef
+        // Draw clef - responsive sizing
+        const isMobile = window.innerWidth <= 480;
         const clefText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        clefText.setAttribute('x', this.currentClef === 'treble' ? '40' : '60');
-        clefText.setAttribute('y', this.currentClef === 'treble' ? '145' : '110');
-        clefText.setAttribute('font-size', this.currentClef === 'treble' ? '150' : '100');
+        
+        if (this.currentClef === 'treble') {
+            clefText.setAttribute('x', isMobile ? '55' : '40');
+            clefText.setAttribute('y', isMobile ? '115' : '145');
+            clefText.setAttribute('font-size', isMobile ? '90' : '150');
+        } else {
+            clefText.setAttribute('x', isMobile ? '70' : '60');
+            clefText.setAttribute('y', isMobile ? '100' : '110');
+            clefText.setAttribute('font-size', isMobile ? '70' : '100');
+        }
+        
         clefText.setAttribute('font-family', 'serif');
         clefText.textContent = this.currentClef === 'treble' ? '𝄞' : '𝄢';
         svg.appendChild(clefText);
