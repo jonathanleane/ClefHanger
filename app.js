@@ -9,18 +9,28 @@ class PianoFlashCards {
         // Note positions for treble and bass clef
         this.trebleNotes = {
             'C4': -20,  // Middle C (ledger line below staff)
+            'C#4': -15, 'Db4': -15,
             'D4': -10,
+            'D#4': -5, 'Eb4': -5,
             'E4': 0,    // Bottom line
             'F4': 10,
+            'F#4': 15, 'Gb4': 15,
             'G4': 20,   // Second line
+            'G#4': 25, 'Ab4': 25,
             'A4': 30,
+            'A#4': 35, 'Bb4': 35,
             'B4': 40,   // Middle line
             'C5': 50,
+            'C#5': 55, 'Db5': 55,
             'D5': 60,   // Fourth line
+            'D#5': 65, 'Eb5': 65,
             'E5': 70,
             'F5': 80,   // Top line
+            'F#5': 85, 'Gb5': 85,
             'G5': 90,
+            'G#5': 95, 'Ab5': 95,
             'A5': 100,
+            'A#5': 105, 'Bb5': 105,
             'B5': 110,
             'C6': 120   // High C (ledger line above staff)
         };
@@ -28,18 +38,28 @@ class PianoFlashCards {
         this.bassNotes = {
             'E2': -20,  // Low E (ledger line below staff)
             'F2': -10,
+            'F#2': -5, 'Gb2': -5,
             'G2': 0,    // Bottom line (G)
+            'G#2': 5, 'Ab2': 5,
             'A2': 10,   // Space
+            'A#2': 15, 'Bb2': 15,
             'B2': 20,   // Second line (B)
             'C3': 30,   // Space
+            'C#3': 35, 'Db3': 35,
             'D3': 40,   // Middle line (D)
+            'D#3': 45, 'Eb3': 45,
             'E3': 50,   // Space
             'F3': 60,   // Fourth line (F)
+            'F#3': 65, 'Gb3': 65,
             'G3': 70,   // Space
+            'G#3': 75, 'Ab3': 75,
             'A3': 80,   // Top line (A)
+            'A#3': 85, 'Bb3': 85,
             'B3': 90,   // Space
             'C4': 100,  // Middle C (ledger line above staff)
+            'C#4': 105, 'Db4': 105,
             'D4': 110,
+            'D#4': 115, 'Eb4': 115,
             'E4': 120
         };
         
@@ -86,6 +106,11 @@ class PianoFlashCards {
                 this.drawStaff(this.currentNoteWithOctave);
             }
         });
+        
+        // Include sharps/flats checkbox
+        document.getElementById('includeSharpsFlats').addEventListener('change', () => {
+            this.generateNewNote();
+        });
     }
     
     createPianoKeyboard() {
@@ -122,7 +147,13 @@ class PianoFlashCards {
                 blackLabel.textContent = note + '#';
                 blackKey.appendChild(blackLabel);
                 
-                // We don't use black keys for answers in this simple version
+                // Make black keys clickable when sharps/flats are enabled
+                blackKey.addEventListener('click', () => {
+                    if (document.getElementById('includeSharpsFlats').checked) {
+                        this.checkAnswer(note + '#');
+                    }
+                });
+                
                 piano.appendChild(blackKey);
             }
         });
@@ -150,13 +181,26 @@ class PianoFlashCards {
         }
         
         // Pick a random note
-        const notes = this.currentClef === 'treble' ? 
+        let notes = this.currentClef === 'treble' ? 
             Object.keys(this.trebleNotes) : 
             Object.keys(this.bassNotes);
         
+        // Filter notes based on sharps/flats checkbox
+        const includeSharpsFlats = document.getElementById('includeSharpsFlats').checked;
+        if (!includeSharpsFlats) {
+            // Only include natural notes (no # or b)
+            notes = notes.filter(note => !note.includes('#') && !note.includes('b'));
+        } else {
+            // Remove duplicate enharmonic notes (keep only sharps)
+            notes = notes.filter(note => !note.includes('b'));
+        }
+        
         const randomIndex = Math.floor(Math.random() * notes.length);
         const noteWithOctave = notes[randomIndex];
-        this.currentNote = noteWithOctave.charAt(0); // Extract just the note letter
+        
+        // Extract note name (could be C, C#, etc.)
+        const match = noteWithOctave.match(/^([A-G]#?)/);
+        this.currentNote = match ? match[1] : noteWithOctave.charAt(0);
         this.currentNoteWithOctave = noteWithOctave; // Store the full note with octave
         
         // Draw the staff and note
@@ -329,11 +373,16 @@ class PianoFlashCards {
         // Note frequencies (A4 = 440Hz)
         const frequencies = {
             'C': 261.63,
+            'C#': 277.18,
             'D': 293.66,
+            'D#': 311.13,
             'E': 329.63,
             'F': 349.23,
+            'F#': 369.99,
             'G': 392.00,
+            'G#': 415.30,
             'A': 440.00,
+            'A#': 466.16,
             'B': 493.88
         };
         
