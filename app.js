@@ -342,6 +342,18 @@ class PianoFlashCards {
             }
         }
         
+        // Draw sharp symbol if needed
+        if (noteWithOctave.includes('#')) {
+            const sharp = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            sharp.setAttribute('x', '175');
+            sharp.setAttribute('y', yPosition + 5);
+            sharp.setAttribute('font-size', '24');
+            sharp.setAttribute('font-family', 'serif');
+            sharp.setAttribute('fill', '#333');
+            sharp.textContent = '♯';
+            svg.appendChild(sharp);
+        }
+        
         // Draw note
         const note = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
         note.setAttribute('cx', '200');
