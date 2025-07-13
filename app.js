@@ -8,58 +8,38 @@ class PianoFlashCards {
         
         // Note positions for treble and bass clef
         this.trebleNotes = {
-            'C4': -20,  // Middle C (ledger line below staff)
-            'C#4': -15, 'Db4': -15,
-            'D4': -10,
-            'D#4': -5, 'Eb4': -5,
+            'C4': -20, 'C#4': -20, 'Db4': -20,  // Middle C (ledger line below staff)
+            'D4': -10, 'D#4': -10, 'Eb4': -10,
             'E4': 0,    // Bottom line
-            'F4': 10,
-            'F#4': 15, 'Gb4': 15,
-            'G4': 20,   // Second line
-            'G#4': 25, 'Ab4': 25,
-            'A4': 30,
-            'A#4': 35, 'Bb4': 35,
+            'F4': 10, 'F#4': 10, 'Gb4': 10,
+            'G4': 20, 'G#4': 20, 'Ab4': 20,   // Second line
+            'A4': 30, 'A#4': 30, 'Bb4': 30,
             'B4': 40,   // Middle line
-            'C5': 50,
-            'C#5': 55, 'Db5': 55,
-            'D5': 60,   // Fourth line
-            'D#5': 65, 'Eb5': 65,
+            'C5': 50, 'C#5': 50, 'Db5': 50,
+            'D5': 60, 'D#5': 60, 'Eb5': 60,   // Fourth line
             'E5': 70,
-            'F5': 80,   // Top line
-            'F#5': 85, 'Gb5': 85,
-            'G5': 90,
-            'G#5': 95, 'Ab5': 95,
-            'A5': 100,
-            'A#5': 105, 'Bb5': 105,
+            'F5': 80, 'F#5': 80, 'Gb5': 80,   // Top line
+            'G5': 90, 'G#5': 90, 'Ab5': 90,
+            'A5': 100, 'A#5': 100, 'Bb5': 100,
             'B5': 110,
             'C6': 120   // High C (ledger line above staff)
         };
         
         this.bassNotes = {
             'E2': -20,  // Low E (ledger line below staff)
-            'F2': -10,
-            'F#2': -5, 'Gb2': -5,
-            'G2': 0,    // Bottom line (G)
-            'G#2': 5, 'Ab2': 5,
-            'A2': 10,   // Space
-            'A#2': 15, 'Bb2': 15,
+            'F2': -10, 'F#2': -10, 'Gb2': -10,
+            'G2': 0, 'G#2': 0, 'Ab2': 0,    // Bottom line (G)
+            'A2': 10, 'A#2': 10, 'Bb2': 10,   // Space
             'B2': 20,   // Second line (B)
-            'C3': 30,   // Space
-            'C#3': 35, 'Db3': 35,
-            'D3': 40,   // Middle line (D)
-            'D#3': 45, 'Eb3': 45,
+            'C3': 30, 'C#3': 30, 'Db3': 30,   // Space
+            'D3': 40, 'D#3': 40, 'Eb3': 40,   // Middle line (D)
             'E3': 50,   // Space
-            'F3': 60,   // Fourth line (F)
-            'F#3': 65, 'Gb3': 65,
-            'G3': 70,   // Space
-            'G#3': 75, 'Ab3': 75,
-            'A3': 80,   // Top line (A)
-            'A#3': 85, 'Bb3': 85,
+            'F3': 60, 'F#3': 60, 'Gb3': 60,   // Fourth line (F)
+            'G3': 70, 'G#3': 70, 'Ab3': 70,   // Space
+            'A3': 80, 'A#3': 80, 'Bb3': 80,   // Top line (A)
             'B3': 90,   // Space
-            'C4': 100,  // Middle C (ledger line above staff)
-            'C#4': 105, 'Db4': 105,
-            'D4': 110,
-            'D#4': 115, 'Eb4': 115,
+            'C4': 100, 'C#4': 100, 'Db4': 100,  // Middle C (ledger line above staff)
+            'D4': 110, 'D#4': 110, 'Eb4': 110,
             'E4': 120
         };
         
