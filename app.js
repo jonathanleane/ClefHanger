@@ -88,7 +88,14 @@ class PianoFlashCards {
         });
         
         // Include sharps/flats checkbox
-        document.getElementById('includeSharpsFlats').addEventListener('change', () => {
+        document.getElementById('includeSharpsFlats').addEventListener('change', (e) => {
+            // Show/hide sharp buttons
+            const sharpButtons = document.getElementById('sharpButtons');
+            if (e.target.checked) {
+                sharpButtons.classList.add('visible');
+            } else {
+                sharpButtons.classList.remove('visible');
+            }
             this.generateNewNote();
         });
     }
