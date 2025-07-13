@@ -45,7 +45,7 @@ h1 {
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     padding: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     display: flex;
     justify-content: center;
 }
@@ -69,6 +69,7 @@ h1 {
 
 .sharp-buttons {
     display: none;
+    grid-template-columns: repeat(5, 1fr);
     margin-bottom: 1rem;
 }
 
@@ -98,10 +99,6 @@ h1 {
     transform: translateY(0);
 }
 
-.note-btn.empty-btn {
-    visibility: hidden;
-    cursor: default;
-}
 
 .feedback {
     text-align: center;
@@ -157,7 +154,7 @@ h1 {
 }
 
 .piano-keyboard {
-    margin: 1rem 0 2rem 0;
+    margin: 0.5rem 0 1.5rem 0;
     position: relative;
     height: 120px;
     display: inline-block;
