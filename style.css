@@ -274,6 +274,7 @@ h1 {
     font-size: 12px;
     font-weight: 600;
     pointer-events: none;
+    display: block;
 }
 
 .piano-key.white .piano-key-label {

@@ -129,6 +129,14 @@ class PianoFlashCards {
                 this.clearHoverNote();
             }
         });
+        
+        // Show/hide key labels checkbox
+        document.getElementById('showKeyLabels').addEventListener('change', (e) => {
+            const labels = document.querySelectorAll('.piano-key-label');
+            labels.forEach(label => {
+                label.style.display = e.target.checked ? 'block' : 'none';
+            });
+        });
     }
     
     setMode(mode) {
