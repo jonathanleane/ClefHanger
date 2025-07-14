@@ -569,13 +569,26 @@ class PianoFlashCards {
         }
         
         if (closestNote) {
-            // Check if it's the correct note
-            const clickedNoteName = closestNote.match(/^([A-G]#?)/)[1];
-            const isCorrect = clickedNoteName === this.currentNote;
+            // Get the position value for the clicked location
+            const clickedPosition = notePositions[closestNote];
+            
+            // For sharp notes, we need to check if any note at this position matches
+            let isCorrect = false;
+            
+            // Check all notes at this position
+            for (const [note, pos] of Object.entries(notePositions)) {
+                if (pos === clickedPosition) {
+                    const noteName = note.match(/^([A-G]#?)/)[1];
+                    if (noteName === this.currentNote) {
+                        isCorrect = true;
+                        break;
+                    }
+                }
+            }
             
             // Draw the note where clicked
             const noteY = 130 - notePositions[closestNote];
-            this.drawNoteAt(noteY, isCorrect);
+            this.drawNoteAt(noteY, isCorrect, this.currentNote.includes('#'));
             
             // Handle scoring
             const feedback = document.getElementById('feedback');
@@ -608,8 +621,20 @@ class PianoFlashCards {
         }
     }
     
-    drawNoteAt(yPosition, isCorrect) {
+    drawNoteAt(yPosition, isCorrect, isSharp = false) {
         const svg = document.getElementById('staff');
+        
+        // Draw sharp symbol if needed
+        if (isSharp) {
+            const sharp = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            sharp.setAttribute('x', '175');
+            sharp.setAttribute('y', yPosition + 5);
+            sharp.setAttribute('font-size', '24');
+            sharp.setAttribute('font-family', 'serif');
+            sharp.setAttribute('fill', isCorrect ? '#27ae60' : '#e74c3c');
+            sharp.textContent = '♯';
+            svg.appendChild(sharp);
+        }
         
         // Draw note
         const note = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
