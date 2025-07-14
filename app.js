@@ -116,6 +116,19 @@ class PianoFlashCards {
                 this.handleStaffClick(e);
             }
         });
+        
+        // Staff hover handler for reverse mode
+        document.getElementById('staff').addEventListener('mousemove', (e) => {
+            if (this.mode === 'pianoToStaff' && this.waitingForStaffClick) {
+                this.handleStaffHover(e);
+            }
+        });
+        
+        document.getElementById('staff').addEventListener('mouseleave', () => {
+            if (this.mode === 'pianoToStaff') {
+                this.clearHoverNote();
+            }
+        });
     }
     
     setMode(mode) {
@@ -619,6 +632,79 @@ class PianoFlashCards {
             document.getElementById('score').textContent = this.score;
             document.getElementById('streak').textContent = this.streak;
         }
+    }
+    
+    handleStaffHover(e) {
+        const svg = document.getElementById('staff');
+        const rect = svg.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        
+        // Convert to SVG coordinates and snap to nearest line/space
+        const staffY = (y / rect.height) * 200;
+        const snapY = Math.round((staffY - 50) / 10) * 10 + 50; // Snap to 10px grid
+        
+        // Clear previous hover
+        this.clearHoverNote();
+        
+        // Draw hover note and ledger lines if needed
+        this.drawHoverNote(snapY);
+    }
+    
+    clearHoverNote() {
+        const svg = document.getElementById('staff');
+        // Remove all hover elements
+        svg.querySelectorAll('.hover-element').forEach(el => el.remove());
+    }
+    
+    drawHoverNote(yPosition) {
+        const svg = document.getElementById('staff');
+        
+        // Draw ledger lines if needed
+        if (yPosition < 50) {
+            // Above staff
+            for (let y = 30; y <= yPosition; y += 20) {
+                if (y < 50) {
+                    const ledger = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    ledger.setAttribute('x1', '185');
+                    ledger.setAttribute('y1', y);
+                    ledger.setAttribute('x2', '215');
+                    ledger.setAttribute('y2', y);
+                    ledger.setAttribute('stroke', '#999');
+                    ledger.setAttribute('stroke-width', '2');
+                    ledger.setAttribute('opacity', '0.5');
+                    ledger.classList.add('hover-element');
+                    svg.appendChild(ledger);
+                }
+            }
+        } else if (yPosition > 130) {
+            // Below staff
+            for (let y = 150; y >= yPosition; y -= 20) {
+                if (y > 130) {
+                    const ledger = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    ledger.setAttribute('x1', '185');
+                    ledger.setAttribute('y1', y);
+                    ledger.setAttribute('x2', '215');
+                    ledger.setAttribute('y2', y);
+                    ledger.setAttribute('stroke', '#999');
+                    ledger.setAttribute('stroke-width', '2');
+                    ledger.setAttribute('opacity', '0.5');
+                    ledger.classList.add('hover-element');
+                    svg.appendChild(ledger);
+                }
+            }
+        }
+        
+        // Draw hover note
+        const note = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+        note.setAttribute('cx', '200');
+        note.setAttribute('cy', yPosition);
+        note.setAttribute('rx', '12');
+        note.setAttribute('ry', '9');
+        note.setAttribute('fill', '#999');
+        note.setAttribute('opacity', '0.5');
+        note.setAttribute('transform', `rotate(-20 200 ${yPosition})`);
+        note.classList.add('hover-element');
+        svg.appendChild(note);
     }
     
     drawNoteAt(yPosition, isCorrect, isSharp = false) {
