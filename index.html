@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClefHanger - Piano Note Flash Cards</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Version: 1.1 - Added sharps/flats support -->
+    <!-- Version: 1.2 - Added reverse mode (Piano → Staff) -->
 <body>
     <div class="container">
         <h1>ClefHanger</h1>
+        
+        <div class="mode-toggle">
+            <button class="mode-btn active" id="modeStaffToPiano">Staff → Piano</button>
+            <button class="mode-btn" id="modePianoToStaff">Piano → Staff</button>
+        </div>
         
         <div class="score-tracker">
             <span>Score: <span id="score">0</span></span>

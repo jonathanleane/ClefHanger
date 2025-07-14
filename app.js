@@ -5,6 +5,8 @@ class PianoFlashCards {
         this.currentNote = null;
         this.currentNoteWithOctave = null;
         this.currentClef = null;
+        this.mode = 'staffToPiano'; // or 'pianoToStaff'
+        this.waitingForStaffClick = false;
         
         // Note positions for treble and bass clef
         this.trebleNotes = {
@@ -98,6 +100,42 @@ class PianoFlashCards {
             }
             this.generateNewNote();
         });
+        
+        // Mode toggle buttons
+        document.getElementById('modeStaffToPiano').addEventListener('click', () => {
+            this.setMode('staffToPiano');
+        });
+        
+        document.getElementById('modePianoToStaff').addEventListener('click', () => {
+            this.setMode('pianoToStaff');
+        });
+        
+        // Staff click handler for reverse mode
+        document.getElementById('staff').addEventListener('click', (e) => {
+            if (this.mode === 'pianoToStaff' && this.waitingForStaffClick) {
+                this.handleStaffClick(e);
+            }
+        });
+    }
+    
+    setMode(mode) {
+        this.mode = mode;
+        this.waitingForStaffClick = false;
+        
+        // Update button states
+        document.getElementById('modeStaffToPiano').classList.toggle('active', mode === 'staffToPiano');
+        document.getElementById('modePianoToStaff').classList.toggle('active', mode === 'pianoToStaff');
+        
+        // Update UI visibility
+        const noteButtons = document.querySelectorAll('.note-buttons');
+        const showButtons = mode === 'staffToPiano';
+        noteButtons.forEach(btn => btn.style.display = showButtons ? 'grid' : 'none');
+        
+        // Update staff cursor
+        document.getElementById('staff').style.cursor = mode === 'pianoToStaff' ? 'crosshair' : 'default';
+        
+        // Start new round
+        this.generateNewNote();
     }
     
     createPianoKeyboard() {
@@ -160,6 +198,11 @@ class PianoFlashCards {
         feedback.textContent = '';
         feedback.className = 'feedback';
         
+        // Clear previous highlights
+        document.querySelectorAll('.piano-key').forEach(key => {
+            key.classList.remove('highlight', 'target-key');
+        });
+        
         // Decide which clef to use
         if (trebleEnabled && bassEnabled) {
             this.currentClef = Math.random() < 0.5 ? 'treble' : 'bass';
@@ -190,8 +233,19 @@ class PianoFlashCards {
         this.currentNote = match ? match[1] : noteWithOctave.charAt(0);
         this.currentNoteWithOctave = noteWithOctave; // Store the full note with octave
         
-        // Draw the staff and note
-        this.drawStaff(noteWithOctave);
+        if (this.mode === 'staffToPiano') {
+            // Draw the note on staff
+            this.drawStaff(noteWithOctave);
+        } else {
+            // Piano to Staff mode - highlight the piano key
+            this.drawEmptyStaff();
+            this.highlightTargetPianoKey(this.currentNote);
+            this.waitingForStaffClick = true;
+            
+            // Update feedback
+            feedback.textContent = 'Click on the staff where this note belongs';
+            feedback.className = 'feedback';
+        }
     }
     
     drawStaff(noteWithOctave) {
@@ -447,6 +501,137 @@ class PianoFlashCards {
                 pianoKey.classList.remove('highlight');
             }, 500);
         }
+    }
+}
+
+    drawEmptyStaff() {
+        const svg = document.getElementById('staff');
+        svg.innerHTML = '';
+        
+        // Staff lines
+        for (let i = 0; i < 5; i++) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            const y = 50 + (i * 20);
+            line.setAttribute('x1', '50');
+            line.setAttribute('y1', y);
+            line.setAttribute('x2', '350');
+            line.setAttribute('y2', y);
+            line.setAttribute('stroke', '#333');
+            line.setAttribute('stroke-width', '2');
+            svg.appendChild(line);
+        }
+        
+        // Draw clef
+        const isMobile = window.innerWidth <= 480;
+        const clefText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        
+        if (this.currentClef === 'treble') {
+            clefText.setAttribute('x', isMobile ? '55' : '40');
+            clefText.setAttribute('y', isMobile ? '115' : '145');
+            clefText.setAttribute('font-size', isMobile ? '90' : '150');
+        } else {
+            clefText.setAttribute('x', isMobile ? '70' : '60');
+            clefText.setAttribute('y', isMobile ? '100' : '110');
+            clefText.setAttribute('font-size', isMobile ? '70' : '100');
+        }
+        
+        clefText.setAttribute('font-family', 'serif');
+        clefText.textContent = this.currentClef === 'treble' ? '𝄞' : '𝄢';
+        svg.appendChild(clefText);
+    }
+    
+    highlightTargetPianoKey(note) {
+        const pianoKey = document.querySelector(`.piano-key[data-note="${note}"]`);
+        if (pianoKey) {
+            pianoKey.classList.add('target-key');
+        }
+    }
+    
+    handleStaffClick(e) {
+        const svg = document.getElementById('staff');
+        const rect = svg.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        
+        // Convert click position to note position
+        const staffY = (y / rect.height) * 200; // Convert to SVG coordinates
+        const clickedPosition = 130 - staffY;
+        
+        // Find closest note position
+        const notePositions = this.currentClef === 'treble' ? this.trebleNotes : this.bassNotes;
+        let closestNote = null;
+        let closestDistance = Infinity;
+        
+        for (const [note, pos] of Object.entries(notePositions)) {
+            const distance = Math.abs(pos - clickedPosition);
+            if (distance < closestDistance && distance < 10) { // 10px tolerance
+                closestDistance = distance;
+                closestNote = note;
+            }
+        }
+        
+        if (closestNote) {
+            // Check if it's the correct note
+            const clickedNoteName = closestNote.match(/^([A-G]#?)/)[1];
+            const isCorrect = clickedNoteName === this.currentNote;
+            
+            // Draw the note where clicked
+            const noteY = 130 - notePositions[closestNote];
+            this.drawNoteAt(noteY, isCorrect);
+            
+            // Handle scoring
+            const feedback = document.getElementById('feedback');
+            if (isCorrect) {
+                feedback.textContent = `Correct! That was ${this.currentNote} 🎉`;
+                feedback.className = 'feedback correct';
+                this.score++;
+                this.streak++;
+                this.playNote(this.currentNote);
+                
+                // Next note after delay
+                this.waitingForStaffClick = false;
+                setTimeout(() => this.generateNewNote(), 1500);
+            } else {
+                feedback.textContent = `Incorrect. The note ${this.currentNote} goes elsewhere`;
+                feedback.className = 'feedback incorrect';
+                this.streak = 0;
+                
+                // Show correct position briefly
+                setTimeout(() => {
+                    this.drawStaff(this.currentNoteWithOctave);
+                    this.waitingForStaffClick = false;
+                    setTimeout(() => this.generateNewNote(), 2000);
+                }, 1000);
+            }
+            
+            // Update score display
+            document.getElementById('score').textContent = this.score;
+            document.getElementById('streak').textContent = this.streak;
+        }
+    }
+    
+    drawNoteAt(yPosition, isCorrect) {
+        const svg = document.getElementById('staff');
+        
+        // Draw note
+        const note = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+        note.setAttribute('cx', '200');
+        note.setAttribute('cy', yPosition);
+        note.setAttribute('rx', '12');
+        note.setAttribute('ry', '9');
+        note.setAttribute('fill', isCorrect ? '#27ae60' : '#e74c3c');
+        note.setAttribute('transform', `rotate(-20 200 ${yPosition})`);
+        svg.appendChild(note);
+        
+        // Draw stem
+        const stem = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        const stemUp = yPosition > 90;
+        stem.setAttribute('x1', stemUp ? '212' : '188');
+        stem.setAttribute('y1', yPosition);
+        stem.setAttribute('x2', stemUp ? '212' : '188');
+        stem.setAttribute('y2', stemUp ? yPosition - 60 : yPosition + 60);
+        stem.setAttribute('stroke', isCorrect ? '#27ae60' : '#e74c3c');
+        stem.setAttribute('stroke-width', '3');
+        svg.appendChild(stem);
     }
 }
 

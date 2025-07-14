@@ -25,8 +25,44 @@ body {
 
 h1 {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     color: #2c3e50;
+}
+
+.mode-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 1rem;
+}
+
+.mode-btn {
+    padding: 0.5rem 1.5rem;
+    background: white;
+    border: 2px solid #3498db;
+    color: #3498db;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mode-btn:first-child {
+    border-radius: 6px 0 0 6px;
+    border-right: none;
+}
+
+.mode-btn:last-child {
+    border-radius: 0 6px 6px 0;
+}
+
+.mode-btn.active {
+    background: #3498db;
+    color: white;
+}
+
+.mode-btn:hover:not(.active) {
+    background: #ecf0f1;
 }
 
 .score-tracker {
@@ -212,6 +248,17 @@ h1 {
 .piano-key.highlight {
     background: #4CAF50 !important;
     animation: highlightKey 0.5s ease-out;
+}
+
+.piano-key.target-key {
+    background: #3498db !important;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
 @keyframes highlightKey {
