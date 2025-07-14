@@ -502,8 +502,7 @@ class PianoFlashCards {
             }, 500);
         }
     }
-}
-
+    
     drawEmptyStaff() {
         const svg = document.getElementById('staff');
         svg.innerHTML = '';
