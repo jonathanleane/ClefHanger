@@ -56,6 +56,10 @@ h1 {
     border-radius: 0 6px 6px 0;
 }
 
+.mode-btn:not(:first-child):not(:last-child) {
+    border-radius: 0;
+}
+
 .mode-btn:not(:last-child) {
     border-right: none;
 }
@@ -78,6 +82,19 @@ h1 {
 
 .score-tracker span {
     font-weight: 600;
+}
+
+.instruction {
+    display: none;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.instruction.visible {
+    display: block;
 }
 
 .staff-container {

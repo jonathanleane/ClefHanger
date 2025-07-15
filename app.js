@@ -5,9 +5,12 @@ class PianoFlashCards {
         this.currentNote = null;
         this.currentNoteWithOctave = null;
         this.currentClef = null;
-        this.mode = 'staffToPiano'; // or 'pianoToStaff' or 'duration'
+        this.mode = 'staffToPiano'; // or 'pianoToStaff' or 'duration' or 'placeDuration'
         this.waitingForStaffClick = false;
         this.currentDuration = null;
+        this.targetDurationType = null;
+        this.targetNoteName = null;
+        this.selectedDurationType = null;
         
         // Note durations
         this.durations = {
@@ -124,22 +127,28 @@ class PianoFlashCards {
             this.setMode('duration');
         });
         
-        // Staff click handler for reverse mode
+        document.getElementById('modePlaceDuration').addEventListener('click', () => {
+            this.setMode('placeDuration');
+        });
+        
+        // Staff click handler for reverse mode and place duration mode
         document.getElementById('staff').addEventListener('click', (e) => {
             if (this.mode === 'pianoToStaff' && this.waitingForStaffClick) {
                 this.handleStaffClick(e);
+            } else if (this.mode === 'placeDuration' && this.waitingForStaffClick) {
+                this.handlePlaceDurationClick(e);
             }
         });
         
         // Staff hover handler for reverse mode
         document.getElementById('staff').addEventListener('mousemove', (e) => {
-            if (this.mode === 'pianoToStaff' && this.waitingForStaffClick) {
+            if ((this.mode === 'pianoToStaff' || this.mode === 'placeDuration') && this.waitingForStaffClick) {
                 this.handleStaffHover(e);
             }
         });
         
         document.getElementById('staff').addEventListener('mouseleave', () => {
-            if (this.mode === 'pianoToStaff') {
+            if (this.mode === 'pianoToStaff' || this.mode === 'placeDuration') {
                 this.clearHoverNote();
             }
         });
@@ -157,6 +166,19 @@ class PianoFlashCards {
             btn.addEventListener('click', () => {
                 if (this.mode === 'duration') {
                     this.checkDurationAnswer(parseFloat(btn.dataset.beats));
+                } else if (this.mode === 'placeDuration' && this.waitingForStaffClick) {
+                    // Store selected duration type based on beats
+                    const beats = parseFloat(btn.dataset.beats);
+                    for (const [type, duration] of Object.entries(this.durations)) {
+                        if (duration.beats === beats) {
+                            this.selectedDurationType = type;
+                            break;
+                        }
+                    }
+                    // Update feedback
+                    const feedback = document.getElementById('feedback');
+                    feedback.textContent = `Selected ${this.durations[this.selectedDurationType].britishName}. Now click on the staff to place it.`;
+                    feedback.className = 'feedback';
                 }
             });
         });
@@ -170,25 +192,28 @@ class PianoFlashCards {
         document.getElementById('modeStaffToPiano').classList.toggle('active', mode === 'staffToPiano');
         document.getElementById('modePianoToStaff').classList.toggle('active', mode === 'pianoToStaff');
         document.getElementById('modeDuration').classList.toggle('active', mode === 'duration');
+        document.getElementById('modePlaceDuration').classList.toggle('active', mode === 'placeDuration');
         
         // Update UI visibility
         const noteButtons = document.querySelectorAll('.note-buttons');
         const durationButtons = document.getElementById('durationButtons');
         const piano = document.getElementById('piano');
+        const instruction = document.getElementById('placeDurationInstruction');
         
         noteButtons.forEach(btn => btn.style.display = mode === 'staffToPiano' ? 'grid' : 'none');
-        durationButtons.classList.toggle('visible', mode === 'duration');
-        piano.style.display = mode === 'duration' ? 'none' : 'inline-block';
+        durationButtons.classList.toggle('visible', mode === 'duration' || mode === 'placeDuration');
+        piano.style.display = (mode === 'duration' || mode === 'placeDuration') ? 'none' : 'inline-block';
+        instruction.classList.toggle('visible', mode === 'placeDuration');
         
         // Update staff cursor
-        document.getElementById('staff').style.cursor = mode === 'pianoToStaff' ? 'crosshair' : 'default';
+        document.getElementById('staff').style.cursor = (mode === 'pianoToStaff' || mode === 'placeDuration') ? 'crosshair' : 'default';
         
-        // Hide certain settings in duration mode
+        // Hide certain settings in duration modes
         const settingsToHide = ['trebleClef', 'bassClef', 'includeSharpsFlats', 'showMiddleC', 'showMnemonics', 'showKeyLabels'];
         settingsToHide.forEach(id => {
             const element = document.getElementById(id);
             if (element) {
-                element.parentElement.style.display = mode === 'duration' ? 'none' : 'inline-block';
+                element.parentElement.style.display = (mode === 'duration' || mode === 'placeDuration') ? 'none' : 'inline-block';
             }
         });
         
@@ -315,6 +340,28 @@ class PianoFlashCards {
             
             // Update feedback
             feedback.textContent = 'How many beats does this note get?';
+            feedback.className = 'feedback';
+        } else if (this.mode === 'placeDuration') {
+            // Place Duration mode - pick a random duration and note
+            const durationTypes = Object.keys(this.durations);
+            const randomDuration = durationTypes[Math.floor(Math.random() * durationTypes.length)];
+            this.targetDurationType = randomDuration;
+            this.currentDuration = this.durations[randomDuration];
+            
+            // Pick a simple note (C, D, E, F, G, A, B)
+            const simpleNotes = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+            this.targetNoteName = simpleNotes[Math.floor(Math.random() * simpleNotes.length)];
+            
+            // Display instruction
+            const instruction = document.getElementById('placeDurationInstruction');
+            instruction.textContent = `Place a ${this.currentDuration.britishName} on ${this.targetNoteName}`;
+            
+            // Draw empty staff
+            this.drawEmptyStaff();
+            this.waitingForStaffClick = true;
+            
+            // Update feedback
+            feedback.textContent = 'Click on the staff to place the note';
             feedback.className = 'feedback';
         }
     }
@@ -692,6 +739,88 @@ class PianoFlashCards {
         }
     }
     
+    handlePlaceDurationClick(e) {
+        if (!this.selectedDurationType) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = 'Please select a duration first!';
+            feedback.className = 'feedback incorrect';
+            return;
+        }
+        
+        const svg = document.getElementById('staff');
+        const rect = svg.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        
+        // Convert click position to note position
+        const staffY = (y / rect.height) * 200; // Convert to SVG coordinates
+        const clickedPosition = 130 - staffY;
+        
+        // Find closest note position (using treble clef for this mode)
+        const notePositions = this.trebleNotes;
+        let closestNote = null;
+        let closestDistance = Infinity;
+        
+        for (const [note, pos] of Object.entries(notePositions)) {
+            const distance = Math.abs(pos - clickedPosition);
+            if (distance < closestDistance && distance < 10) { // 10px tolerance
+                closestDistance = distance;
+                closestNote = note;
+            }
+        }
+        
+        if (closestNote) {
+            // Extract the note name without octave
+            const clickedNoteName = closestNote.match(/^([A-G])/)[1];
+            const isCorrectNote = clickedNoteName === this.targetNoteName;
+            const isCorrectDuration = this.selectedDurationType === this.targetDurationType;
+            const isCorrect = isCorrectNote && isCorrectDuration;
+            
+            // Draw the selected duration at the clicked position
+            const noteY = 130 - notePositions[closestNote];
+            this.drawPlacedDurationNote(noteY, this.selectedDurationType, isCorrect);
+            
+            // Handle scoring
+            const feedback = document.getElementById('feedback');
+            if (isCorrect) {
+                feedback.textContent = `Perfect! You placed a ${this.currentDuration.britishName} on ${this.targetNoteName} 🎉`;
+                feedback.className = 'feedback correct';
+                this.score++;
+                this.streak++;
+                this.playNote(this.targetNoteName);
+                
+                // Next note after delay
+                this.waitingForStaffClick = false;
+                setTimeout(() => this.generateNewNote(), 1500);
+            } else {
+                let errorMsg = '';
+                if (!isCorrectNote && !isCorrectDuration) {
+                    errorMsg = `Wrong note and duration! You placed a ${this.durations[this.selectedDurationType].britishName} on ${clickedNoteName}`;
+                } else if (!isCorrectNote) {
+                    errorMsg = `Wrong note! You placed it on ${clickedNoteName} instead of ${this.targetNoteName}`;
+                } else {
+                    errorMsg = `Wrong duration! You placed a ${this.durations[this.selectedDurationType].britishName} instead of ${this.currentDuration.britishName}`;
+                }
+                feedback.textContent = errorMsg;
+                feedback.className = 'feedback incorrect';
+                this.streak = 0;
+                
+                // Show correct answer
+                setTimeout(() => {
+                    this.drawCorrectPlaceDuration();
+                    this.waitingForStaffClick = false;
+                    setTimeout(() => this.generateNewNote(), 2500);
+                }, 1500);
+            }
+            
+            // Update score display
+            document.getElementById('score').textContent = this.score;
+            document.getElementById('streak').textContent = this.streak;
+            
+            // Reset selected duration
+            this.selectedDurationType = null;
+        }
+    }
+    
     handleStaffHover(e) {
         const svg = document.getElementById('staff');
         const rect = svg.getBoundingClientRect();
@@ -913,6 +1042,77 @@ class PianoFlashCards {
         stem.setAttribute('stroke', isCorrect ? '#27ae60' : '#e74c3c');
         stem.setAttribute('stroke-width', '3');
         svg.appendChild(stem);
+    }
+    
+    drawPlacedDurationNote(yPosition, durationType, isCorrect) {
+        const svg = document.getElementById('staff');
+        const noteX = 200;
+        const duration = this.durations[durationType];
+        const color = isCorrect ? '#27ae60' : '#e74c3c';
+        
+        // Draw note head
+        const note = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+        note.setAttribute('cx', noteX);
+        note.setAttribute('cy', yPosition);
+        note.setAttribute('rx', durationType === 'whole' ? '14' : '12');
+        note.setAttribute('ry', '9');
+        note.setAttribute('fill', duration.filled ? color : 'none');
+        note.setAttribute('stroke', color);
+        note.setAttribute('stroke-width', duration.filled ? '0' : '3');
+        note.setAttribute('transform', `rotate(-20 ${noteX} ${yPosition})`);
+        svg.appendChild(note);
+        
+        // Draw stem if needed
+        if (duration.stem) {
+            const stemUp = yPosition > 90;
+            const stem = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            stem.setAttribute('x1', stemUp ? noteX + 12 : noteX - 12);
+            stem.setAttribute('y1', yPosition);
+            stem.setAttribute('x2', stemUp ? noteX + 12 : noteX - 12);
+            stem.setAttribute('y2', stemUp ? yPosition - 60 : yPosition + 60);
+            stem.setAttribute('stroke', color);
+            stem.setAttribute('stroke-width', '3');
+            svg.appendChild(stem);
+            
+            // Draw flags for eighth and sixteenth notes
+            if (duration.flags > 0) {
+                for (let i = 0; i < duration.flags; i++) {
+                    const flag = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const flagX = stemUp ? noteX + 12 : noteX - 12;
+                    const flagY = stemUp ? yPosition - 60 + (i * 15) : yPosition + 60 - (i * 15);
+                    const flagDir = stemUp ? 1 : -1;
+                    flag.setAttribute('d', `M ${flagX} ${flagY} C ${flagX} ${flagY + 20*flagDir}, ${flagX + 13*flagDir} ${flagY + 25*flagDir}, ${flagX + 13*flagDir} ${flagY + 35*flagDir}`);
+                    flag.setAttribute('stroke', color);
+                    flag.setAttribute('stroke-width', '3');
+                    flag.setAttribute('fill', 'none');
+                    svg.appendChild(flag);
+                }
+            }
+        }
+    }
+    
+    drawCorrectPlaceDuration() {
+        // Find the position for the target note
+        const targetNoteWithOctave = this.targetNoteName + '4'; // Use octave 4 as default
+        const notePosition = this.trebleNotes[targetNoteWithOctave];
+        const noteY = 130 - notePosition;
+        
+        // Clear and redraw staff
+        this.drawEmptyStaff();
+        
+        // Draw the correct answer in green
+        this.drawPlacedDurationNote(noteY, this.targetDurationType, true);
+        
+        // Add label
+        const svg = document.getElementById('staff');
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', '200');
+        label.setAttribute('y', '180');
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('font-size', '16');
+        label.setAttribute('fill', '#27ae60');
+        label.textContent = `Correct answer: ${this.currentDuration.britishName} on ${this.targetNoteName}`;
+        svg.appendChild(label);
     }
 }
 
