@@ -6,12 +6,20 @@ A fun, interactive web app for learning to read musical notes on treble and bass
 
 ## ✨ Features
 
-- **Interactive Learning**: Click buttons or piano keys to identify notes
+- **Four Practice Modes**:
+  - **Staff → Piano**: See a note on staff, identify it on piano or buttons
+  - **Piano → Staff**: See a highlighted piano key, place the note on staff
+  - **Duration Practice**: Learn note values (Semibreve, Minim, Crotchet, Quaver, Semiquaver)
+  - **Place Duration**: Combine duration and pitch - place specific note types at specific positions
+- **Interactive Learning**: Click buttons, piano keys, or staff positions
 - **Dual Clef Support**: Practice treble clef, bass clef, or both
 - **Visual Piano Keyboard**: See the connection between staff notation and piano keys
+- **Sharps and Flats**: Optional practice with accidentals
 - **Learning Aids**:
   - Show Middle C reference guide
   - Display helpful mnemonics (Every Good Boy Does Fine, etc.)
+  - Toggle piano key labels on/off
+  - Hover preview when placing notes on staff
 - **Progress Tracking**: Score counter and streak tracking
 - **Audio Feedback**: Hear the correct note when you get it right
 - **Responsive Design**: Works great on desktop and mobile devices
@@ -41,15 +49,30 @@ That's it! No build process or dependencies required.
 
 ## 🎮 How to Play
 
+### Staff → Piano Mode (Default)
 1. A note appears on the musical staff
 2. Identify the note by either:
    - Clicking the letter button (C, D, E, F, G, A, B)
    - Clicking the corresponding piano key
    - Pressing the letter on your keyboard
-3. Get instant feedback:
-   - ✅ Correct: See "Correct! That was [note] 🎉" and hear the note
-   - ❌ Incorrect: See the correct answer and try again
-4. Build your streak and improve your score!
+3. Get instant feedback and hear the note when correct
+
+### Piano → Staff Mode
+1. A piano key is highlighted
+2. Click on the staff where that note should be placed
+3. See a preview as you hover over the staff
+4. Get feedback on your placement accuracy
+
+### Duration Practice Mode
+1. A note with a specific duration appears on the staff
+2. Identify how many beats it gets (4, 2, 1, ½, or ¼)
+3. Learn both American names (Whole, Half, etc.) and British names (Semibreve, Minim, etc.)
+
+### Place Duration Mode
+1. You're given an instruction like "Place a Semibreve on C"
+2. First, select the correct duration from the buttons
+3. Then, click on the staff at the correct pitch
+4. Get specific feedback on what was wrong (if anything)
 
 ### Tips for Beginners
 
