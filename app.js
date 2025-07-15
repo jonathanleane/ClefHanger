@@ -161,6 +161,14 @@ class PianoFlashCards {
             });
         });
         
+        // Show/hide duration labels checkbox
+        document.getElementById('showDurationLabels').addEventListener('change', (e) => {
+            const labels = document.querySelectorAll('.duration-label');
+            labels.forEach(label => {
+                label.style.display = e.target.checked ? 'block' : 'none';
+            });
+        });
+        
         // Duration button clicks
         document.querySelectorAll('.duration-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -216,6 +224,12 @@ class PianoFlashCards {
                 element.parentElement.style.display = (mode === 'duration' || mode === 'placeDuration') ? 'none' : 'inline-block';
             }
         });
+        
+        // Show duration labels checkbox only in duration modes
+        const durationLabelsCheckbox = document.getElementById('showDurationLabels');
+        if (durationLabelsCheckbox) {
+            durationLabelsCheckbox.parentElement.style.display = (mode === 'duration' || mode === 'placeDuration') ? 'inline-block' : 'none';
+        }
         
         // Start new round
         this.generateNewNote();

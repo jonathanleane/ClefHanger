@@ -54,11 +54,11 @@
             </div>
             
             <div class="duration-buttons" id="durationButtons">
-                <button class="duration-btn" data-beats="4">4 beats<br><small>Semibreve</small></button>
-                <button class="duration-btn" data-beats="2">2 beats<br><small>Minim</small></button>
-                <button class="duration-btn" data-beats="1">1 beat<br><small>Crotchet</small></button>
-                <button class="duration-btn" data-beats="0.5">½ beat<br><small>Quaver</small></button>
-                <button class="duration-btn" data-beats="0.25">¼ beat<br><small>Semiquaver</small></button>
+                <button class="duration-btn" data-beats="4">4 beats<br><small class="duration-label">Semibreve</small></button>
+                <button class="duration-btn" data-beats="2">2 beats<br><small class="duration-label">Minim</small></button>
+                <button class="duration-btn" data-beats="1">1 beat<br><small class="duration-label">Crotchet</small></button>
+                <button class="duration-btn" data-beats="0.5">½ beat<br><small class="duration-label">Quaver</small></button>
+                <button class="duration-btn" data-beats="0.25">¼ beat<br><small class="duration-label">Semiquaver</small></button>
             </div>
             
             <div id="feedback" class="feedback"></div>
@@ -82,6 +82,9 @@
             </label>
             <label>
                 <input type="checkbox" id="showKeyLabels" checked> Show Key Labels
+            </label>
+            <label>
+                <input type="checkbox" id="showDurationLabels" checked> Show Duration Names
             </label>
             <button id="newNote">New Note</button>
         </div>
