@@ -13,6 +13,7 @@
         <div class="mode-toggle">
             <button class="mode-btn active" id="modeStaffToPiano">Staff → Piano</button>
             <button class="mode-btn" id="modePianoToStaff">Piano → Staff</button>
+            <button class="mode-btn" id="modeDuration">Duration Practice</button>
         </div>
         
         <div class="score-tracker">
@@ -47,6 +48,14 @@
                 <button class="note-btn" data-note="F#">F#</button>
                 <button class="note-btn" data-note="G#">G#</button>
                 <button class="note-btn" data-note="A#">A#</button>
+            </div>
+            
+            <div class="duration-buttons" id="durationButtons">
+                <button class="duration-btn" data-beats="4">4 beats<br><small>Whole</small></button>
+                <button class="duration-btn" data-beats="2">2 beats<br><small>Half</small></button>
+                <button class="duration-btn" data-beats="1">1 beat<br><small>Quarter</small></button>
+                <button class="duration-btn" data-beats="0.5">½ beat<br><small>Eighth</small></button>
+                <button class="duration-btn" data-beats="0.25">¼ beat<br><small>Sixteenth</small></button>
             </div>
             
             <div id="feedback" class="feedback"></div>

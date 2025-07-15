@@ -5,8 +5,18 @@ class PianoFlashCards {
         this.currentNote = null;
         this.currentNoteWithOctave = null;
         this.currentClef = null;
-        this.mode = 'staffToPiano'; // or 'pianoToStaff'
+        this.mode = 'staffToPiano'; // or 'pianoToStaff' or 'duration'
         this.waitingForStaffClick = false;
+        this.currentDuration = null;
+        
+        // Note durations
+        this.durations = {
+            'whole': { beats: 4, name: 'Whole Note', stem: false, filled: false, flags: 0 },
+            'half': { beats: 2, name: 'Half Note', stem: true, filled: false, flags: 0 },
+            'quarter': { beats: 1, name: 'Quarter Note', stem: true, filled: true, flags: 0 },
+            'eighth': { beats: 0.5, name: 'Eighth Note', stem: true, filled: true, flags: 1 },
+            'sixteenth': { beats: 0.25, name: 'Sixteenth Note', stem: true, filled: true, flags: 2 }
+        };
         
         // Note positions for treble and bass clef
         this.trebleNotes = {
@@ -110,6 +120,10 @@ class PianoFlashCards {
             this.setMode('pianoToStaff');
         });
         
+        document.getElementById('modeDuration').addEventListener('click', () => {
+            this.setMode('duration');
+        });
+        
         // Staff click handler for reverse mode
         document.getElementById('staff').addEventListener('click', (e) => {
             if (this.mode === 'pianoToStaff' && this.waitingForStaffClick) {
@@ -137,6 +151,15 @@ class PianoFlashCards {
                 label.style.display = e.target.checked ? 'block' : 'none';
             });
         });
+        
+        // Duration button clicks
+        document.querySelectorAll('.duration-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (this.mode === 'duration') {
+                    this.checkDurationAnswer(parseFloat(btn.dataset.beats));
+                }
+            });
+        });
     }
     
     setMode(mode) {
@@ -146,14 +169,28 @@ class PianoFlashCards {
         // Update button states
         document.getElementById('modeStaffToPiano').classList.toggle('active', mode === 'staffToPiano');
         document.getElementById('modePianoToStaff').classList.toggle('active', mode === 'pianoToStaff');
+        document.getElementById('modeDuration').classList.toggle('active', mode === 'duration');
         
         // Update UI visibility
         const noteButtons = document.querySelectorAll('.note-buttons');
-        const showButtons = mode === 'staffToPiano';
-        noteButtons.forEach(btn => btn.style.display = showButtons ? 'grid' : 'none');
+        const durationButtons = document.getElementById('durationButtons');
+        const piano = document.getElementById('piano');
+        
+        noteButtons.forEach(btn => btn.style.display = mode === 'staffToPiano' ? 'grid' : 'none');
+        durationButtons.classList.toggle('visible', mode === 'duration');
+        piano.style.display = mode === 'duration' ? 'none' : 'inline-block';
         
         // Update staff cursor
         document.getElementById('staff').style.cursor = mode === 'pianoToStaff' ? 'crosshair' : 'default';
+        
+        // Hide certain settings in duration mode
+        const settingsToHide = ['trebleClef', 'bassClef', 'includeSharpsFlats', 'showMiddleC', 'showMnemonics', 'showKeyLabels'];
+        settingsToHide.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.parentElement.style.display = mode === 'duration' ? 'none' : 'inline-block';
+            }
+        });
         
         // Start new round
         this.generateNewNote();
@@ -257,7 +294,7 @@ class PianoFlashCards {
         if (this.mode === 'staffToPiano') {
             // Draw the note on staff
             this.drawStaff(noteWithOctave);
-        } else {
+        } else if (this.mode === 'pianoToStaff') {
             // Piano to Staff mode - highlight the piano key
             this.drawEmptyStaff();
             this.highlightTargetPianoKey(this.currentNote);
@@ -265,6 +302,19 @@ class PianoFlashCards {
             
             // Update feedback
             feedback.textContent = 'Click on the staff where this note belongs';
+            feedback.className = 'feedback';
+        } else if (this.mode === 'duration') {
+            // Duration mode - pick a random duration and draw it
+            const durationTypes = Object.keys(this.durations);
+            const randomDuration = durationTypes[Math.floor(Math.random() * durationTypes.length)];
+            this.currentDuration = this.durations[randomDuration];
+            this.currentDurationType = randomDuration;
+            
+            // Draw the duration note
+            this.drawDurationNote(randomDuration);
+            
+            // Update feedback
+            feedback.textContent = 'How many beats does this note get?';
             feedback.className = 'feedback';
         }
     }
@@ -713,6 +763,119 @@ class PianoFlashCards {
         note.setAttribute('transform', `rotate(-20 200 ${yPosition})`);
         note.classList.add('hover-element');
         svg.appendChild(note);
+    }
+    
+    drawDurationNote(durationType) {
+        const svg = document.getElementById('staff');
+        svg.innerHTML = '';
+        
+        // Draw staff lines
+        for (let i = 0; i < 5; i++) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            const y = 50 + (i * 20);
+            line.setAttribute('x1', '50');
+            line.setAttribute('y1', y);
+            line.setAttribute('x2', '350');
+            line.setAttribute('y2', y);
+            line.setAttribute('stroke', '#333');
+            line.setAttribute('stroke-width', '2');
+            svg.appendChild(line);
+        }
+        
+        // Draw treble clef (duration practice uses treble clef)
+        const isMobile = window.innerWidth <= 480;
+        const clefText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        clefText.setAttribute('x', isMobile ? '55' : '40');
+        clefText.setAttribute('y', isMobile ? '115' : '145');
+        clefText.setAttribute('font-size', isMobile ? '90' : '150');
+        clefText.setAttribute('font-family', 'serif');
+        clefText.textContent = '𝄞';
+        svg.appendChild(clefText);
+        
+        // Draw time signature (4/4)
+        const time4 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        time4.setAttribute('x', '120');
+        time4.setAttribute('y', '80');
+        time4.setAttribute('font-size', '28');
+        time4.setAttribute('font-weight', 'bold');
+        time4.textContent = '4';
+        svg.appendChild(time4);
+        
+        const time4b = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        time4b.setAttribute('x', '120');
+        time4b.setAttribute('y', '120');
+        time4b.setAttribute('font-size', '28');
+        time4b.setAttribute('font-weight', 'bold');
+        time4b.textContent = '4';
+        svg.appendChild(time4b);
+        
+        // Draw the note at middle position
+        const noteX = 200;
+        const noteY = 90; // Middle line
+        const duration = this.durations[durationType];
+        
+        // Draw note head
+        const note = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
+        note.setAttribute('cx', noteX);
+        note.setAttribute('cy', noteY);
+        note.setAttribute('rx', durationType === 'whole' ? '14' : '12');
+        note.setAttribute('ry', '9');
+        note.setAttribute('fill', duration.filled ? '#333' : 'none');
+        note.setAttribute('stroke', '#333');
+        note.setAttribute('stroke-width', duration.filled ? '0' : '3');
+        note.setAttribute('transform', `rotate(-20 ${noteX} ${noteY})`);
+        svg.appendChild(note);
+        
+        // Draw stem if needed
+        if (duration.stem) {
+            const stem = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            stem.setAttribute('x1', noteX + 12);
+            stem.setAttribute('y1', noteY);
+            stem.setAttribute('x2', noteX + 12);
+            stem.setAttribute('y2', noteY - 60);
+            stem.setAttribute('stroke', '#333');
+            stem.setAttribute('stroke-width', '3');
+            svg.appendChild(stem);
+            
+            // Draw flags for eighth and sixteenth notes
+            if (duration.flags > 0) {
+                for (let i = 0; i < duration.flags; i++) {
+                    const flag = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const flagY = noteY - 60 + (i * 15);
+                    flag.setAttribute('d', `M ${noteX + 12} ${flagY} C ${noteX + 12} ${flagY + 20}, ${noteX + 25} ${flagY + 25}, ${noteX + 25} ${flagY + 35}`);
+                    flag.setAttribute('stroke', '#333');
+                    flag.setAttribute('stroke-width', '3');
+                    flag.setAttribute('fill', 'none');
+                    svg.appendChild(flag);
+                }
+            }
+        }
+    }
+    
+    checkDurationAnswer(beats) {
+        const feedback = document.getElementById('feedback');
+        const isCorrect = beats === this.currentDuration.beats;
+        
+        if (isCorrect) {
+            feedback.textContent = `Correct! ${this.currentDuration.name} = ${beats} beat${beats !== 1 ? 's' : ''} 🎉`;
+            feedback.className = 'feedback correct';
+            this.score++;
+            this.streak++;
+            
+            // Next note after delay
+            setTimeout(() => this.generateNewNote(), 1500);
+        } else {
+            feedback.textContent = `Incorrect. ${this.currentDuration.name} = ${this.currentDuration.beats} beat${this.currentDuration.beats !== 1 ? 's' : ''}`;
+            feedback.className = 'feedback incorrect';
+            this.streak = 0;
+            
+            // Next note after delay
+            setTimeout(() => this.generateNewNote(), 2500);
+        }
+        
+        // Update score display
+        document.getElementById('score').textContent = this.score;
+        document.getElementById('streak').textContent = this.streak;
     }
     
     drawNoteAt(yPosition, isCorrect, isSharp = false) {
