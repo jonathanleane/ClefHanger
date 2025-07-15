@@ -11,11 +11,11 @@ class PianoFlashCards {
         
         // Note durations
         this.durations = {
-            'whole': { beats: 4, name: 'Whole Note', stem: false, filled: false, flags: 0 },
-            'half': { beats: 2, name: 'Half Note', stem: true, filled: false, flags: 0 },
-            'quarter': { beats: 1, name: 'Quarter Note', stem: true, filled: true, flags: 0 },
-            'eighth': { beats: 0.5, name: 'Eighth Note', stem: true, filled: true, flags: 1 },
-            'sixteenth': { beats: 0.25, name: 'Sixteenth Note', stem: true, filled: true, flags: 2 }
+            'whole': { beats: 4, name: 'Whole Note', britishName: 'Semibreve', stem: false, filled: false, flags: 0 },
+            'half': { beats: 2, name: 'Half Note', britishName: 'Minim', stem: true, filled: false, flags: 0 },
+            'quarter': { beats: 1, name: 'Quarter Note', britishName: 'Crotchet', stem: true, filled: true, flags: 0 },
+            'eighth': { beats: 0.5, name: 'Eighth Note', britishName: 'Quaver', stem: true, filled: true, flags: 1 },
+            'sixteenth': { beats: 0.25, name: 'Sixteenth Note', britishName: 'Semiquaver', stem: true, filled: true, flags: 2 }
         };
         
         // Note positions for treble and bass clef
@@ -857,7 +857,7 @@ class PianoFlashCards {
         const isCorrect = beats === this.currentDuration.beats;
         
         if (isCorrect) {
-            feedback.textContent = `Correct! ${this.currentDuration.name} = ${beats} beat${beats !== 1 ? 's' : ''} 🎉`;
+            feedback.textContent = `Correct! ${this.currentDuration.britishName} (${this.currentDuration.name}) = ${beats} beat${beats !== 1 ? 's' : ''} 🎉`;
             feedback.className = 'feedback correct';
             this.score++;
             this.streak++;
@@ -865,7 +865,7 @@ class PianoFlashCards {
             // Next note after delay
             setTimeout(() => this.generateNewNote(), 1500);
         } else {
-            feedback.textContent = `Incorrect. ${this.currentDuration.name} = ${this.currentDuration.beats} beat${this.currentDuration.beats !== 1 ? 's' : ''}`;
+            feedback.textContent = `Incorrect. ${this.currentDuration.britishName} (${this.currentDuration.name}) = ${this.currentDuration.beats} beat${this.currentDuration.beats !== 1 ? 's' : ''}`;
             feedback.className = 'feedback incorrect';
             this.streak = 0;
             
