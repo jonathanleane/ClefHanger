@@ -769,8 +769,8 @@ class PianoFlashCards {
         const staffY = (y / rect.height) * 200; // Convert to SVG coordinates
         const clickedPosition = 130 - staffY;
         
-        // Find closest note position (using treble clef for this mode)
-        const notePositions = this.trebleNotes;
+        // Find closest note position using the current clef
+        const notePositions = this.currentClef === 'treble' ? this.trebleNotes : this.bassNotes;
         let closestNote = null;
         let closestDistance = Infinity;
         
@@ -1107,8 +1107,11 @@ class PianoFlashCards {
     
     drawCorrectPlaceDuration() {
         // Find the position for the target note
-        const targetNoteWithOctave = this.targetNoteName + '4'; // Use octave 4 as default
-        const notePosition = this.trebleNotes[targetNoteWithOctave];
+        // Use appropriate octave for each clef
+        const octave = this.currentClef === 'treble' ? '4' : '3';
+        const targetNoteWithOctave = this.targetNoteName + octave;
+        const notePositions = this.currentClef === 'treble' ? this.trebleNotes : this.bassNotes;
+        const notePosition = notePositions[targetNoteWithOctave];
         const noteY = 130 - notePosition;
         
         // Clear and redraw staff
