@@ -11,6 +11,8 @@ class PianoFlashCards {
         this.targetDurationType = null;
         this.targetNoteName = null;
         this.selectedDurationType = null;
+        this.midiAccess = null;
+        this.selectedMidiInput = null;
         
         // Note durations
         this.durations = {
@@ -60,6 +62,7 @@ class PianoFlashCards {
         
         this.setupEventListeners();
         this.createPianoKeyboard();
+        this.initializeMIDI();
         this.generateNewNote();
         
         // Redraw keyboard on window resize
@@ -1130,6 +1133,189 @@ class PianoFlashCards {
         label.setAttribute('fill', '#27ae60');
         label.textContent = `Correct answer: ${this.currentDuration.britishName} on ${this.targetNoteName}`;
         svg.appendChild(label);
+    }
+    
+    // MIDI Support Methods
+    async initializeMIDI() {
+        try {
+            // Check if Web MIDI API is available
+            if (!navigator.requestMIDIAccess) {
+                console.log('Web MIDI API not supported in this browser');
+                return;
+            }
+            
+            // Request MIDI access
+            this.midiAccess = await navigator.requestMIDIAccess();
+            console.log('MIDI Access granted');
+            
+            // Set up MIDI input handlers
+            this.midiAccess.inputs.forEach(input => {
+                console.log(`MIDI Input detected: ${input.name}`);
+            });
+            
+            // Auto-select first MIDI input if available
+            if (this.midiAccess.inputs.size > 0) {
+                const firstInput = this.midiAccess.inputs.values().next().value;
+                this.selectMIDIInput(firstInput);
+            }
+            
+            // Listen for new MIDI devices
+            this.midiAccess.onstatechange = (e) => {
+                console.log(`MIDI device ${e.port.name} ${e.port.state}`);
+                this.updateMIDIDeviceUI();
+            };
+            
+            // Create MIDI device UI
+            this.createMIDIDeviceUI();
+            
+        } catch (error) {
+            console.error('Failed to get MIDI access:', error);
+        }
+    }
+    
+    selectMIDIInput(input) {
+        // Remove handler from previous input
+        if (this.selectedMidiInput) {
+            this.selectedMidiInput.onmidimessage = null;
+        }
+        
+        // Set new input
+        this.selectedMidiInput = input;
+        this.selectedMidiInput.onmidimessage = (message) => this.handleMIDIMessage(message);
+        console.log(`Selected MIDI input: ${input.name}`);
+        
+        // Update UI
+        this.updateMIDIDeviceUI();
+        
+        // Update indicator
+        const indicator = document.getElementById('midiIndicator');
+        if (indicator) {
+            indicator.textContent = `MIDI: ${input.name}`;
+            indicator.classList.add('active');
+            indicator.style.display = 'flex';
+        }
+    }
+    
+    handleMIDIMessage(message) {
+        const [status, note, velocity] = message.data;
+        
+        // Note on message (144 = note on, channel 1)
+        if (status >= 144 && status <= 159 && velocity > 0) {
+            this.handleMIDINoteOn(note, velocity);
+        }
+        // Note off message (128 = note off, channel 1) or note on with velocity 0
+        else if ((status >= 128 && status <= 143) || (status >= 144 && status <= 159 && velocity === 0)) {
+            this.handleMIDINoteOff(note);
+        }
+    }
+    
+    handleMIDINoteOn(midiNote, velocity) {
+        // Convert MIDI note number to note name
+        const noteName = this.midiNoteToNoteName(midiNote);
+        console.log(`MIDI Note On: ${midiNote} (${noteName}) velocity: ${velocity}`);
+        
+        // Visual feedback on piano
+        const pianoKey = document.querySelector(`.piano-key[data-note="${noteName}"]`);
+        if (pianoKey) {
+            pianoKey.classList.add('active');
+        }
+        
+        // Check answer in Staff → Piano mode
+        if (this.mode === 'staffToPiano') {
+            this.checkAnswer(noteName);
+        }
+    }
+    
+    handleMIDINoteOff(midiNote) {
+        const noteName = this.midiNoteToNoteName(midiNote);
+        console.log(`MIDI Note Off: ${midiNote} (${noteName})`);
+        
+        // Remove visual feedback
+        const pianoKey = document.querySelector(`.piano-key[data-note="${noteName}"]`);
+        if (pianoKey) {
+            pianoKey.classList.remove('active');
+        }
+    }
+    
+    midiNoteToNoteName(midiNote) {
+        // MIDI note 60 = Middle C (C4)
+        const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const octave = Math.floor(midiNote / 12) - 1;
+        const noteIndex = midiNote % 12;
+        const noteName = noteNames[noteIndex];
+        
+        // For this app, we only need the note name without octave for checking answers
+        return noteName;
+    }
+    
+    createMIDIDeviceUI() {
+        // Add MIDI connection indicator
+        const container = document.querySelector('.container');
+        const indicator = document.createElement('div');
+        indicator.className = 'midi-indicator';
+        indicator.id = 'midiIndicator';
+        indicator.textContent = 'MIDI Disconnected';
+        indicator.style.display = 'none';
+        container.appendChild(indicator);
+        
+        // Add MIDI device selector to settings
+        const settings = document.querySelector('.settings');
+        
+        const midiContainer = document.createElement('div');
+        midiContainer.className = 'midi-settings';
+        midiContainer.innerHTML = `
+            <label for="midiDevice">MIDI Device:</label>
+            <select id="midiDevice">
+                <option value="">No MIDI Device</option>
+            </select>
+        `;
+        
+        // Insert before the New Note button
+        const newNoteBtn = document.getElementById('newNote');
+        settings.insertBefore(midiContainer, newNoteBtn);
+        
+        // Add change handler
+        document.getElementById('midiDevice').addEventListener('change', (e) => {
+            if (e.target.value) {
+                const input = this.midiAccess.inputs.get(e.target.value);
+                if (input) {
+                    this.selectMIDIInput(input);
+                }
+            } else {
+                if (this.selectedMidiInput) {
+                    this.selectedMidiInput.onmidimessage = null;
+                    this.selectedMidiInput = null;
+                }
+                // Update indicator
+                const indicator = document.getElementById('midiIndicator');
+                if (indicator) {
+                    indicator.textContent = 'MIDI Disconnected';
+                    indicator.classList.remove('active');
+                    indicator.style.display = 'none';
+                }
+            }
+        });
+        
+        this.updateMIDIDeviceUI();
+    }
+    
+    updateMIDIDeviceUI() {
+        const select = document.getElementById('midiDevice');
+        if (!select || !this.midiAccess) return;
+        
+        // Clear current options
+        select.innerHTML = '<option value="">No MIDI Device</option>';
+        
+        // Add all available MIDI inputs
+        this.midiAccess.inputs.forEach((input, id) => {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = input.name || `MIDI Device ${id}`;
+            if (this.selectedMidiInput && this.selectedMidiInput.id === id) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
     }
 }
 
